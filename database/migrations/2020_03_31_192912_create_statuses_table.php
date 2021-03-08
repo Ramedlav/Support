@@ -18,6 +18,7 @@ class CreateStatusesTable extends Migration
             $table->boolean('viewed');
             $table->boolean('closed');
             $table->boolean('answered');
+            $table->boolean('new');
             $table->timestamps();
         });
     }
