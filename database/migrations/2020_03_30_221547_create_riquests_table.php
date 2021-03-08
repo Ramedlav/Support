@@ -13,12 +13,12 @@ class CreateRequestsTable extends Migration
      */
     public function up()
     {
-        Schema::create('requests', function (Blueprint $table) {
+        Schema::create('riquests', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
             $table->string('descripion');
             $table->string('request');
             $table->integer('user_id');
+            $table->integer('statuse_id');
             $table->timestamps();
         });
     }
