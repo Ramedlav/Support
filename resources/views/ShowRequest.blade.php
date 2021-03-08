@@ -8,11 +8,17 @@
                     <div class="card-header">Support</div>
                     <div class="card-body">
                         <table>
-                            <tr>
-                                <th><h1 class="alert">{{$request->description}}</h1></th>
+			    <tr>
+                                <th><p class="alert-info">{{ $request->user->name }}</p></th>
+                            </tr>
+			    <tr>
+                                <th><p class="alert-info">{{ $request->user->email }}</p></th>
                             </tr>
                             <tr>
-                                <td><p class="alert-info">{{$request->request}}</p></td>
+                                <th>description:<h1 class="alert"> {{$request->description}}</h1></th>
+                            </tr>
+                            <tr>
+                                <td>request:<p class="alert-info">{{$request->request}}</p></td>
                             </tr>
 {{--                            I need 'if' because we have a button that must to appear just if the answer exist
                                 if для за кнопки--}}
@@ -50,6 +56,7 @@
                         <textarea name="response"></textarea>
                     </div>
                     <div class="modal-footer">
+			<input type="hidden" name="statuse_id" value="4">
                         <input type="hidden" name="user_id" value="{{Auth::user()->id}}">
                         <input type="hidden" name="riquest_id" value="{{$request->id}}">
                         <button class="btn btn-danger" data-dismiss="modal">Close</button>
