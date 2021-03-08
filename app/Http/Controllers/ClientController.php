@@ -25,12 +25,15 @@ class ClientController extends Controller
         $requests = Riquest::Select(['id','description','statuse_id'])->where('user_id',$id)->get();
         return view('MyRequests', ["requests"=>$requests]);
     }
+
+
 //данный метод возвращает виду определённый метод
     public function RequestShow($id){
         $request = Riquest::find($id);
         $responses = $request->response;
         if(Auth::user()->role == 'admin' && $request->statuse->status == 'new'){DB::table('riquests')->where('id',$id)->update(['statuse_id'=>'1']);}
-        return view('ShowRequest',["request"=>$request,"responses"=>$responses]);
+        
+	return view('ShowRequest',["request"=>$request,"responses"=>$responses]);
     }
 
 // логика добавления запроса клиентом
@@ -44,9 +47,7 @@ class ClientController extends Controller
         $Quest = new Riquest;
         $Quest ->fill($data);
         $Quest ->save();
-        //Знаю, что так получать мыло администратора не совсем корректно для данной задачи
-        //но к сожалению я слишком поздно понял условие задачи корректно ((
-        //и реализовал систему таким образом, что администратор может быть только один.
+        
         $user_name = $request->user()->name;
         $admins = User::Select('email')->where('role','admin')->get();
         foreach($admins as $admin){
@@ -64,10 +65,12 @@ class ClientController extends Controller
         // о добавлении новых статусов
         DB::table('riquests')->where('id',$id)->update(['statuse_id'=>'3']);
         $request = Riquest::find($id);//получаем модель закрываемого запроса
-        $user = User::find($request->user_id);//получаем модель пользователя
-        $request->user_name = $user->name;//добавляем в модель запроса имя пользователя для удобства;
+//        dump($request->user->name);
+//        exit;
+        //$user = User::find($request->user_id);//получаем модель пользователя(теперь не нужно из за отношений)
+        $request->user_name = $request->user->name;//добавляем в модель запроса имя пользователя для удобства;
         //отправляем письмо
-        Mail::to($user->email)->send(new userClose($request));
+        Mail::to($request->user->email)->send(new userClose($request));
         //делаем переадресацыю на страницу запросов пользователя
         return redirect('MyRequests/'.Auth::user()->id);
 
@@ -82,7 +85,11 @@ class ClientController extends Controller
             'riquest_id'=>'required|max:11',
         ]);
         //обновляем статус запроса на отвеченный
+	if(Auth::user()->role == 'admin'){
         DB::table('riquests')->where('id',$request->riquest_id)->update(['statuse_id'=>'2']);
+	}else{
+	DB::table('riquests')->where('id',$request->riquest_id)->update(['statuse_id'=>'4']);
+	}
         //логика заполнения и сохрнения ответа на запрос в таблицу
         $data = $request->all();
         $response = new Response();
